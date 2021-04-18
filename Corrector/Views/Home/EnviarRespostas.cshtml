@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Corrector.Models.GabaritoQuestao>
+
+@{
+    ViewData["Title"] = "Gabartio";
+}
+
+<h1>Gabartio</h1>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                NumeroQuetao
+            </th>
+            <th>
+                Resposta
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+
+    <form asp-action="GabaritoQuestoes" method="get">
+    <input type="submit" value="Conferir acertos" class="btn btn-primary" />
+</form>
+    <p>
+
+    </p>
+
+    <tbody>
+        @*<form asp-action="EnviarRespostasCarregarGabarito" method="post" enctype="multipart/form-data">*@
+
+        <div class="form-group">
+            <label class="control-label">Inserir Gabarito</label>
+            <input name="gabarito" id="gabarito" type="file" class="form-control" />
+        </div>
+
+        <p></p>
+        @for (var i = 1; i <= 120; i++)
+        {
+            <tr>
+                <td>
+                    Questao @i
+                </td>
+                <td>
+                    <input type="text" id="questaos[@i]" style="text-transform:uppercase" name="questaos[@i]" onkeyup="mudar(@i, event.target.value)">
+                </td>
+            </tr>
+        }
+        <p></p>
+        <div class="form-group">
+            <input type="submit" value="Enviar" onclick="enviarRespostas()" class="btn btn-primary" />
+        </div>
+        @* </form>*@
+    </tbody>
+</table>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        teste();
+
+        $('input').keyup(function () {
+
+                $(this).next().focus();
+            
+        });
+    });
+
+
+
+    var lista = [];
+    var form = new FormData();;
+
+    function mudar(questao, resposta) {
+
+        lista[questao - 1] = { NumeroQuetao: questao, Resposta: resposta };
+
+        if (resposta == 'C' || resposta == 'c') {
+            document.getElementById('questaos[' + questao + ']').style.backgroundColor = 'greenyellow';
+            var numero = questao + 1;
+            document.getElementById('questaos[' + numero + ']').focus()
+
+        } else if (resposta == 'E' || resposta == 'e') {
+            document.getElementById('questaos[' + questao + ']').style.backgroundColor = 'red';
+            var numero = questao + 1;
+            document.getElementById('questaos[' + numero + ']').focus()
+
+        } else if (resposta == 'SR' || resposta == 'sr' || resposta == 's' || resposta == 'S'  ) {
+            document.getElementById('questaos[' + questao + ']').style.backgroundColor = 'yellow';
+            document.getElementById('questaos[' + questao + ']').value = 'sr';
+
+            var numero = questao + 1;
+            //lista[questao - 1] = { NumeroQuetao: questao, Resposta: 'SR' };
+            document.getElementById('questaos[' + numero + ']').focus()
+        } else {
+            document.getElementById('questaos[' + questao + ']').value = '';
+            document.getElementById('questaos[' + questao + ']').focus();
+
+
+        }
+       
+    }
+
+
+    function teste() {
+        $('#gabarito').change(function (event) {
+            form.append('gabarito', event.target.files[0]); // para apenas 1 arquivo
+            //var name = event.target.files[0].content.name; // para capturar o nome do arquivo com sua extenção
+        });
+    }
+
+
+
+
+
+
+    function enviarRespostas() {
+        const tt = lista.length;
+        for (var i = 0; i < 120 - tt; i++) {
+            if (lista[tt-1].Resposta == "") {
+                lista[tt - 1] = { NumeroQuetao: tt, Resposta: 'SR' }
+            }
+            lista[tt + i] = { NumeroQuetao: tt + i, Resposta: 'SR' }
+        }
+
+        form.append('questaos', JSON.stringify(lista))
+
+        $.ajax({
+            url: "http://localhost:5003/Home/EnviarRespostasCarregarGabarito",
+            data: form,
+            type: 'post',
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                alert("Respostas enviadas!");
+            }
+        });
+
+
+        form.delete('questaos')
+
+    }
+</script>

@@ -1,0 +1,55 @@
+﻿@model Corrector.Models.GabaritoQuestao
+
+@{
+    ViewData["Title"] = "GabaritoQuestoes";
+}
+
+<h1>GabaritoQuestoes</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <h2>Total de pontos: @Model.Total</h2>
+        <tr>
+            <th>
+                Disciplina
+            </th>
+            <th>
+                Questao
+            </th>
+            <th>
+                Resposta
+            </th>
+            <th>
+                Gabarito
+            </th>
+            <th>
+                Ponto
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Questoes) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Disciplina)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroQuetao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Resposta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gabarito)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ponto)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
